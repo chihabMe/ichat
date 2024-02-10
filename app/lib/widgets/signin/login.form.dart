@@ -14,7 +14,12 @@ class _LoginFormState extends State<LoginForm> {
     return Container(
       child: Column(children: [
         AuthInput(controller: this._email, label: "Your email"),
-        AuthInput(controller: this._password, label: "Password")
+        SizedBox(height: 15),
+        AuthInput(
+          controller: this._password,
+          label: "Password",
+          secure: true,
+        )
       ]),
     );
   }
