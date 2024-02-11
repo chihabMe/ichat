@@ -3,9 +3,10 @@ package handler
 import (
 	"github.com/chihabMe/ichat/server/core"
 	"github.com/chihabMe/ichat/server/models"
-	"github.com/chihabMe/ichat/server/utils"
+	utils "github.com/chihabMe/ichat/server/utils/validators"
 	"github.com/gofiber/fiber/v2"
 )
+
 
 type RegisterInput struct {
 		Username string `json:"username"`
