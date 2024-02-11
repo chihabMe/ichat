@@ -18,12 +18,13 @@ func Register(c *fiber.Ctx)error{
 	var user models.User
 	    var userInput RegisterInput
 	  if err := c.BodyParser(&userInput); err != nil {
-        return err
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error":"Missed fields",})
     }
 	if userInput.Password!=userInput.Password2{
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":"Passwords don't match",
 		})
+	}
 	hashedPassword , err :=utils.HashPassword(userInput.Password)
 	if err!=nil{
 		return err
@@ -34,11 +35,16 @@ func Register(c *fiber.Ctx)error{
 	if err :=db.Save(&user).Error;err!=nil{
 		return err
 	}
-	}
 	return c.JSON(fiber.Map{
 		"message":"User registered successfully",
 		"user":user,
 	})
 
 
+}
+func GetAllAccounts(c *fiber.Ctx)error{
+
+	db := core.Instance
+	users := db.Model(&models.User{})
+	return c.JSON(fiber.Map{"users":users,})
 }
