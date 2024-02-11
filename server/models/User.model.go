@@ -9,7 +9,7 @@ type User struct {
 	gorm.Model
 	Username string
 	Email string 
-	Password string
+	Password string `json:"-"`
 	Verified bool
 	Active bool
 }
