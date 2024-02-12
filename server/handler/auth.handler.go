@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/chihabMe/ichat/server/models"
 	"github.com/chihabMe/ichat/server/services"
 	utils "github.com/chihabMe/ichat/server/utils/jwt"
@@ -56,8 +58,30 @@ func ObtainToken(c *fiber.Ctx)error{
 	services.SaveRefreshToken(user,refresh_token.Body,refresh_token.Exp)
 	return c.JSON(fiber.Map{"status":"success","message":"token obtained","tokens":fiber.Map{"access_token":access_token.Body,"refresh_token":refresh_token.Body}})
 }
+
+type LogoutBody struct {
+	RefreshToken string `json:"refresh_token"`
+}
 func LogoutToken(c *fiber.Ctx)error{
-	return c.JSON(fiber.Map{"success":true})
+	var token LogoutBody
+	if err:= c.BodyParser(&token);err!=nil{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"refresh_token":"required "})
+	}
+	t := token.RefreshToken
+
+	_,err := utils.VerifyToken(t)
+	if err!=nil{
+		fmt.Println(err)
+		return c.JSON(fiber.Map{"status":"success","message":"logged out"})
+	}
+
+	deletedToken ,err := services.DeleteRefreshTokenIfExisted(t)
+	if err!=nil{
+		fmt.Println(err)
+		return c.JSON(fiber.Map{"status":"success","message":"logged out"})
+	}
+	fmt.Println(deletedToken)
+	return c.JSON(fiber.Map{"status":"success","message":"logged out"})
 }
 func VerifyToken(c *fiber.Ctx)error{
 	return c.JSON(fiber.Map{"success":true})

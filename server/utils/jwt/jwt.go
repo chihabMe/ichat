@@ -52,7 +52,7 @@ func generateToken(user *models.User,expires time.Duration ) (TokenData, error) 
 }
 
 
-func VerifyAccessToken(tokenString string)(*jwt.Token,error){
+func VerifyToken(tokenString string)(*jwt.Token,error){
 	token,err :=jwt.Parse(tokenString,func(token *jwt.Token)(interface{},error){
 		if _,ok :=token.Method.(*jwt.SigningMethodHMAC);!ok{
 			return nil,fmt.Errorf("unexpected siding method ")
@@ -65,6 +65,14 @@ func VerifyAccessToken(tokenString string)(*jwt.Token,error){
 	_,ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid{
 		return nil,errors.New("Invalid token")
+	}
+	return token,nil
+
+}
+func VerifyAccessToken(tokenString string)(*jwt.Token,error){
+	token,err := VerifyToken(tokenString)
+	if err !=nil{
+		return nil,err
 	}
 	alive :=VerifyTokenExpireDate(token)
 	if !alive {
