@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/chihabMe/ichat/server/core"
 	"github.com/chihabMe/ichat/server/models"
+	"github.com/chihabMe/ichat/server/services"
 	utils "github.com/chihabMe/ichat/server/utils/validators"
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,7 +16,6 @@ type RegisterInput struct {
 		Password2 string `json:"password2"`
 	}
 func Register(c *fiber.Ctx)error{
-	db := core.Instance
 	var user models.User
 	    var userInput RegisterInput
 	  if err := c.BodyParser(&userInput); err != nil {
@@ -28,17 +28,26 @@ func Register(c *fiber.Ctx)error{
 	}
 	hashedPassword , err :=utils.HashPassword(userInput.Password)
 	if err!=nil{
-		return err
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
 	}
 	user.Username=userInput.Username
 	user.Email=userInput.Email
 	user.Password=hashedPassword
-	if err :=db.Save(&user).Error;err!=nil{
-		return err
+	if err :=services.CreateUser(user);err!=nil{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
 	}
+	 profile := models.Profile{
+		User: user,
+	}
+
+	if err :=services.CreateProfile(profile);err!=nil{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
+	}
+	
+
 	return c.JSON(fiber.Map{
 		"message":"User registered successfully",
-		"user":user,
+		"profile":profile,
 	})
 
 
@@ -57,13 +66,13 @@ func DeleteAccount(c *fiber.Ctx)error{
 }
 func GetAllAccounts(c *fiber.Ctx)error{
 	db := core.Instance
-	var users []models.User
+	var profiles []models.Profile
 	
-	if err :=db.Model(&models.User{}).Preload("Tokens").Find(&users).Error; err!=nil{
+	if err :=db.Model(&models.Profile{}).Find(&profiles).Error; err!=nil{
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status":"error","message":"server error"})
 	}
 
-	return c.JSON(fiber.Map{"users":users,})
+	return c.JSON(fiber.Map{"profiles":profiles,})
 }
 
 
