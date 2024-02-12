@@ -25,7 +25,7 @@ func ObtainToken(c *fiber.Ctx)error{
 	input := new(LoginInput)
 	var userData UserData
 	if err:=c.BodyParser(&input);err!=nil{
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"failed to login","data":err})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"missed fields"})
 	}
 	email := input.Email
 	pass := input.Password

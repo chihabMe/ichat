@@ -8,14 +8,29 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(user *models.User)(string,error){
-	token := jwt.New(jwt.SigningMethodES256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["username"]=user.Username
-	claims["user_id"] = user.ID
-	claims["exp"]= time.Now().Add(core.ACCESS_TOKEN_TIME).Unix()
+type JwtClaims struct {
+	Username string `json:"username"`
+	UserId   uint   `json:"user_id"`
+	Exp      int64  `json:"exp"`
+	jwt.RegisteredClaims
+}
 
-	secret_key := core.Config("SECRET_KEY")
-	t,err := token.SignedString([]byte(secret_key))
-	return t,err
+func GenerateToken(user *models.User) (string, error) {
+	c := JwtClaims{
+		Username: user.Username,
+		UserId:   user.ID,
+		Exp:      time.Now().Add(core.ACCESS_TOKEN_TIME).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+
+
+	var secretKey = core.Config("SECRET_KEY")
+
+	// Sign the token with the ECDSA private key
+	t, err := token.SignedString([]byte(secretKey))
+	if err != nil {
+		return "", err
+	}
+
+	return t, nil
 }
