@@ -24,6 +24,13 @@ type ChangePasswordData struct {
 	NewPassword string `json:"new_password"`
 	NewPassword2 string `json:"new_password2"`
 }
+func (c ChangePasswordData) Validate()error {
+	return validation.ValidateStruct(&c,
+		validation.Field(&c.OldPassword,validation.Required),
+		validation.Field(&c.NewPassword,validation.Required),
+		validation.Field(&c.NewPassword2,validation.Required,validation.In(&c.NewPassword).Error("Passwords don't match")),
+	)
+}
 
 type MeData struct {
 	Username string `json"username"`

@@ -55,11 +55,12 @@ func UpdateProfile(c *fiber.Ctx)error{
 func ChangePassword(c *fiber.Ctx)error{
 	var changePasswordData schemas.ChangePasswordData
 	if err:=c.BodyParser(&changePasswordData);err!=nil{
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"Missed fields "})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"Failed to parse data"})
 	}
-	if changePasswordData.NewPassword!=changePasswordData.NewPassword2{
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"Passwords don't match"})
+	if err := changePasswordData.Validate();err!=nil{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","errors":err})
 	}
+	
 	user := c.Locals("user").(*models.User)
 	isSamePassword := utils.ComparePassword(user.Password,changePasswordData.OldPassword)
 	if !isSamePassword{
