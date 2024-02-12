@@ -66,8 +66,20 @@ func GetAllAccounts(c *fiber.Ctx)error{
 	return c.JSON(fiber.Map{"users":users,})
 }
 
+
+type MeData struct {
+	Username string `json"username"`
+	Email string `json"email"`
+	Verified bool `json:"verified"`
+	Active bool `json:"active"`
+}
 func Me(c *fiber.Ctx)error{
 	user := c.Locals("user").(*models.User)
-
-	return c.JSON(fiber.Map{"user":user})
+	 meData :=MeData{
+		Username: user.Username,
+		Email: user.Email,
+		Verified: user.Verified,
+		Active: user.Active,
+	 }
+	return c.JSON(meData)
 }
