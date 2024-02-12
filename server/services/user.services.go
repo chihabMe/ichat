@@ -41,3 +41,9 @@ func GetUserByID(id uint)(*models.User,error){
 	}
 	return &user,nil
 }
+func UpdateUserPassword(newPasswordHash string,user *models.User)error{
+	db:=core.Instance
+	user.Password = newPasswordHash
+	return db.Save(&user).Error
+
+}

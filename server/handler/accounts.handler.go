@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/chihabMe/ichat/server/core"
 	"github.com/chihabMe/ichat/server/models"
 	"github.com/chihabMe/ichat/server/services"
@@ -54,9 +56,36 @@ func Register(c *fiber.Ctx)error{
 }
 func UpdateProfile(c *fiber.Ctx)error{
 	return c.JSON(fiber.Map{"success":true,"message":"your profile has been updated"})
-
+}
+type ChangePasswordData struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+	NewPassword2 string `json:"new_password2"`
 }
 func ChangePassword(c *fiber.Ctx)error{
+	var changePasswordData ChangePasswordData
+	if err:=c.BodyParser(&changePasswordData);err!=nil{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"Missed fields "})
+	}
+	if changePasswordData.NewPassword!=changePasswordData.NewPassword2{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"Passwords don't match"})
+	}
+	user := c.Locals("user").(*models.User)
+	isSamePassword := utils.ComparePassword(user.Password,changePasswordData.OldPassword)
+	if !isSamePassword{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"Invalid password"})
+	}
+	newPasswordHash,err:=utils.HashPassword(changePasswordData.NewPassword)
+	if err!=nil{
+	fmt.Println(err)
+	return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	if err:=services.UpdateUserPassword(newPasswordHash,user);err!=nil{
+	fmt.Println(err)
+	return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
 	return c.JSON(fiber.Map{"success":true,"message":"your password has been changed"})
 }
 func DeleteAccount(c *fiber.Ctx)error{

@@ -14,5 +14,6 @@ func SetupAccountsRoutes(app fiber.Router){
 	 router.Get("",handler.GetAllAccounts)
 	 router.Post("/register",handler.Register)
 	 router.Get("/me",middleware.ProtectedMiddleware(),handler.Me)
+	 router.Post("/change-password",middleware.ProtectedMiddleware(),handler.ChangePassword)
 	 fmt.Println(("regeared accounts routes successfully"))
 }
