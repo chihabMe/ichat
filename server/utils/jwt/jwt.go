@@ -66,7 +66,6 @@ func VerifyAccessToken(tokenString string)(*jwt.Token,error){
 	if !ok || !token.Valid{
 		return nil,errors.New("Invalid token")
 	}
-	fmt.Println("--------passed ---------")
 	alive :=VerifyTokenExpireDate(token)
 	if !alive {
 		return nil,errors.New("dead token")
