@@ -23,4 +23,5 @@ func ConnectDb(){
 }
 func Migrate(){
 	Instance.AutoMigrate(&models.User{})
+	Instance.AutoMigrate(&models.Token{})
 }

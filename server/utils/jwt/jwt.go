@@ -14,12 +14,22 @@ type JwtClaims struct {
 	Exp      int64  `json:"exp"`
 	jwt.RegisteredClaims
 }
+type TokenData struct {
+	Body string
+	Exp int64
+}
 
-func GenerateToken(user *models.User) (string, error) {
+func GenerateAccessToken(user *models.User)(TokenData,error){
+	return generateToken(user,core.ACCESS_TOKEN_TIME)
+}
+func GenerateRefreshToken(user *models.User)(TokenData,error){
+	return generateToken(user,core.REFRESH_TOKEN_TIME)
+}
+func generateToken(user *models.User,expires time.Duration ) (TokenData, error) {
 	c := JwtClaims{
 		Username: user.Username,
 		UserId:   user.ID,
-		Exp:      time.Now().Add(core.ACCESS_TOKEN_TIME).Unix(),
+		Exp:      time.Now().Add(expires).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 
@@ -28,9 +38,13 @@ func GenerateToken(user *models.User) (string, error) {
 
 	// Sign the token with the ECDSA private key
 	t, err := token.SignedString([]byte(secretKey))
+	 tokenData := TokenData{
+		Body: t,
+		Exp:c.Exp ,
+	 }
 	if err != nil {
-		return "", err
+		return tokenData, err
 	}
 
-	return t, nil
+	return tokenData, nil
 }

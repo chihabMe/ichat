@@ -58,8 +58,10 @@ func DeleteAccount(c *fiber.Ctx)error{
 func GetAllAccounts(c *fiber.Ctx)error{
 	db := core.Instance
 	var users []models.User
-	if err :=db.Find(&users).Error; err!=nil{
+	
+	if err :=db.Model(&models.User{}).Preload("Tokens").Find(&users).Error; err!=nil{
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status":"error","message":"server error"})
 	}
+
 	return c.JSON(fiber.Map{"users":users,})
 }

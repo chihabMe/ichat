@@ -12,4 +12,7 @@ type User struct {
 	Password string `json:"-"`
 	Verified bool
 	Active bool
+	Tokens []Token
 }
+
+
