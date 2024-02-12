@@ -20,3 +20,15 @@ func GetUserByEmail(email string)(*models.User,error){
 	}
 	return &user,nil
 }
+
+func GetUserByID(id uint)(*models.User,error){
+	db := core.Instance
+	var user models.User
+	if err:= db.Where("id = ?",id).Find(&user).Error;err!=nil{
+		if errors.Is(err,gorm.ErrRecordNotFound){
+			return nil,nil
+		}
+		return nil,err
+	}
+	return &user,nil
+}

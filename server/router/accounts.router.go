@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/chihabMe/ichat/server/handler"
+	"github.com/chihabMe/ichat/server/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,5 +13,6 @@ func SetupAccountsRoutes(app fiber.Router){
 	 router := app.Group("/accounts")
 	 router.Get("",handler.GetAllAccounts)
 	 router.Post("/register",handler.Register)
+	 router.Get("/me",middleware.ProtectedMiddleware(),handler.Me)
 	 fmt.Println(("regeared accounts routes successfully"))
 }

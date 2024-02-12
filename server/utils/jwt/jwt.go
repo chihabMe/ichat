@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/chihabMe/ichat/server/core"
@@ -47,4 +49,34 @@ func generateToken(user *models.User,expires time.Duration ) (TokenData, error) 
 	}
 
 	return tokenData, nil
+}
+
+
+func VerifyAccessToken(tokenString string)(*jwt.Token,error){
+	token,err :=jwt.Parse(tokenString,func(token *jwt.Token)(interface{},error){
+		if _,ok :=token.Method.(*jwt.SigningMethodHMAC);!ok{
+			return nil,fmt.Errorf("unexpected siding method ")
+		}
+		return []byte(core.Config("SECRET_KEY")),nil
+	})
+	if err!=nil{
+		return nil,err
+	}
+	_,ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid{
+		return nil,errors.New("Invalid token")
+	}
+	fmt.Println("--------passed ---------")
+	alive :=VerifyTokenExpireDate(token)
+	if !alive {
+		return nil,errors.New("dead token")
+	}
+	return token,nil
+}
+func VerifyTokenExpireDate(token *jwt.Token) bool {
+	claims := token.Claims.(jwt.MapClaims)
+	exp := float64(claims["exp"].(float64))
+	now := float64(time.Now().Unix())
+	return now < exp
+
 }

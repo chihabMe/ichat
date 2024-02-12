@@ -65,3 +65,8 @@ func GetAllAccounts(c *fiber.Ctx)error{
 
 	return c.JSON(fiber.Map{"users":users,})
 }
+
+func Me(c *fiber.Ctx)error{
+	user := c.Locals("user").(models.User)
+	return c.JSON(fiber.Map{"user":user})
+}
