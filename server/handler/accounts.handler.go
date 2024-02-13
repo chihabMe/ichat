@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"fmt"
+	"log"
+	"strings"
 
 	"github.com/chihabMe/ichat/server/core"
 	"github.com/chihabMe/ichat/server/models"
@@ -30,8 +31,13 @@ func Register(c *fiber.Ctx)error{
 	user.Email=userInput.Email
 	user.Password=hashedPassword
 	if err :=services.CreateUser(&user);err!=nil{
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
-	}
+	if strings.Contains(err.Error(), "Duplicate entry") {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "This email is already being used"})
+    }
+
+	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "unable to register"})
+    } 
+        
 	 profile := models.Profile{
 		UserId: user.ID,
 	}
@@ -68,12 +74,12 @@ func ChangePassword(c *fiber.Ctx)error{
 	}
 	newPasswordHash,err:=utils.HashPassword(changePasswordData.NewPassword)
 	if err!=nil{
-	fmt.Println(err)
+	log.Println(err)
 	return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
 	if err:=services.UpdateUserPassword(newPasswordHash,user);err!=nil{
-	fmt.Println(err)
+		log.Println(err)
 	return c.SendStatus(fiber.StatusInternalServerError)
 	}
 

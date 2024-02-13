@@ -26,7 +26,7 @@ func (r Role) String() string {
 type User struct {
 	Base
 	Username string
-	Email    string
+	Email    string `gorm:"unique"`
 	Password string `json:"-"`
 	Verified bool
 	Active   bool
