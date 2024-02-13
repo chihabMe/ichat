@@ -4,33 +4,28 @@ import (
 	"fmt"
 
 	"github.com/chihabMe/ichat/server/models"
+	"github.com/chihabMe/ichat/server/schemas"
 	"github.com/chihabMe/ichat/server/services"
 	utils "github.com/chihabMe/ichat/server/utils/jwt"
 	validators "github.com/chihabMe/ichat/server/utils/validators"
 	"github.com/gofiber/fiber/v2"
 )
 func ObtainToken(c *fiber.Ctx)error{
-	type LoginInput struct {
-		Email string `json:"email"`
-		Password string `json:"password"`
-	}
-	type UserData struct {
-		ID       uint   `json:"id"`
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-	input := new(LoginInput)
-	var userData UserData
+	input := new(schemas.LoginInput)
+	var userData schemas.UserData
 	if err:=c.BodyParser(&input);err!=nil{
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"missed fields"})
+	}
+	if err :=input.Validate();err!=nil{
+		return c.Status(fiber.ErrBadRequest.Code).JSON(
+			fiber.Map{
+				"status":"error",
+				"errors":err,
+		})
 	}
 	email := input.Email
 	pass := input.Password
 	user,_ :=new(models.User),*new(error)
-	if !validators.IsEmail(email){
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"invalid email"})
-	}
 	user,err := services.GetUserByEmail(email)
 	if(err!=nil){
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status":"error","message":"unable to obtain token"})
@@ -38,7 +33,7 @@ func ObtainToken(c *fiber.Ctx)error{
 	if(user==nil){
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"Invalid password or email"})
 	}
-	userData = UserData{
+	userData = schemas.UserData{
 		ID: user.ID,
 		Email: user.Email,
 		Username: user.Username,
