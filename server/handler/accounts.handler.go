@@ -29,14 +29,14 @@ func Register(c *fiber.Ctx)error{
 	user.Username=userInput.Username
 	user.Email=userInput.Email
 	user.Password=hashedPassword
-	if err :=services.CreateUser(user);err!=nil{
+	if err :=services.CreateUser(&user);err!=nil{
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
 	}
 	 profile := models.Profile{
-		User: user,
+		UserId: user.ID,
 	}
 
-	if err :=services.CreateProfile(profile);err!=nil{
+	if err :=services.CreateProfile(&profile);err!=nil{
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
 	}
 	

@@ -8,14 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateUser(user models.User)error{
+func CreateUser(user *models.User)error{
 	db:= core.Instance
-	return db.Save(&user).Error
+	return db.Save(user).Error
 
 }
-func CreateProfile(profile models.Profile)error{
+func CreateProfile(profile *models.Profile)error{
 	db:= core.Instance
-	return db.Save(&profile).Error
+	return db.Save(profile).Error
 }
 
 func GetUserByEmail(email string)(*models.User,error){

@@ -8,11 +8,12 @@ import (
 	"github.com/chihabMe/ichat/server/core"
 	"github.com/chihabMe/ichat/server/models"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type JwtClaims struct {
 	Username string `json:"username"`
-	UserId   uint   `json:"user_id"`
+	UserId   uuid.UUID   `json:"user_id"`
 	Exp      int64  `json:"exp"`
 	jwt.RegisteredClaims
 }

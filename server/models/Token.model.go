@@ -1,12 +1,12 @@
 package models
 
-import "gorm.io/gorm"
+import "github.com/google/uuid"
 
 
 
 type Token struct {
+	Base
     Token string `json:"token" gorm:"index"`
-	UserID uint
+	UserID uuid.UUID
 	Exp int64 `json:"exp"`
-    gorm.Model
 }

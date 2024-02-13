@@ -3,6 +3,7 @@ package schemas
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/google/uuid"
 )
 
 type LoginInput struct {
@@ -18,7 +19,7 @@ func (l LoginInput) Validate()error{
 	)
 }
 type UserData struct {
-		ID       uint   `json:"id"`
+		ID       uuid.UUID   `json:"id"`
 		Username string `json:"username"`
 		Email    string `json:"email"`
 		Password string `json:"password"`

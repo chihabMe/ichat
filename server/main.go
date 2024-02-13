@@ -27,5 +27,5 @@ func main() {
 	core.ConnectDb()
 	setupMiddleware(app)
 	setupRoutes(app)
-	log.Fatal(app.Listen(":8001"))
+	log.Fatal(app.Listen(":8000"))
 }
