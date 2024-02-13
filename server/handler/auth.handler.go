@@ -54,30 +54,29 @@ func ObtainToken(c *fiber.Ctx)error{
 	return c.JSON(fiber.Map{"status":"success","message":"token obtained","tokens":fiber.Map{"access_token":access_token.Body,"refresh_token":refresh_token.Body}})
 }
 
-type LogoutBody struct {
-	RefreshToken string `json:"refresh_token"`
-}
 func LogoutToken(c *fiber.Ctx)error{
-	var token LogoutBody
+	var token schemas.LogoutBody
 	if err:= c.BodyParser(&token);err!=nil{
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"refresh_token":"required "})
 	}
+	if err:= token.Validate();err!=nil{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","errors":err})
+	}
 	t := token.RefreshToken
-
 	_,err := utils.VerifyToken(t)
 	if err!=nil{
 		fmt.Println(err)
 		return c.JSON(fiber.Map{"status":"success","message":"logged out"})
 	}
 
-	deletedToken ,err := services.DeleteRefreshTokenIfExisted(t)
-	if err!=nil{
-		fmt.Println(err)
-		return c.JSON(fiber.Map{"status":"success","message":"logged out"})
-	}
-	fmt.Println(deletedToken)
+	services.DeleteRefreshTokenIfExisted(t)
 	return c.JSON(fiber.Map{"status":"success","message":"logged out"})
 }
 func VerifyToken(c *fiber.Ctx)error{
 	return c.JSON(fiber.Map{"success":true})
+}
+func Me(c *fiber.Ctx)error{
+	user := c.Locals("user").(models.User)
+	return c.JSON(fiber.Map{"status":"success","user":user})
+
 }

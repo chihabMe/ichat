@@ -23,3 +23,14 @@ type UserData struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
+
+
+type LogoutBody struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+func (l LogoutBody) Validate()error{
+	return validation.ValidateStruct(&l,
+		validation.Field(&l.RefreshToken,validation.Required),
+	)
+}

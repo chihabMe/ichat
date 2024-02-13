@@ -96,13 +96,7 @@ func GetAllAccounts(c *fiber.Ctx)error{
 }
 
 
-func Me(c *fiber.Ctx)error{
-	user := c.Locals("user").(*models.User)
-	 meData :=schemas.MeData{
-		Username: user.Username,
-		Email: user.Email,
-		Verified: user.Verified,
-		Active: user.Active,
-	 }
-	return c.JSON(meData)
+func GetAuthenticatedUserProfile(c *fiber.Ctx)error{
+	profile := c.Locals("user").(*models.User)
+	return c.JSON(fiber.Map{"status":"success","data":profile})
 }
