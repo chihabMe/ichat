@@ -11,6 +11,7 @@ type TokenRepository interface {
 	Create(ctx context.Context, token *models.Token) error
 	Delete(ctx context.Context, token *models.Token) error
 	DeleteAllByUserID(ctx context.Context, userID string) error
+	DeleteByTokenString(ctx context.Context, tokenString string)error
 	FindByTokenString(ctx context.Context, tokenString string) (*models.Token, error)
 }
 
@@ -40,5 +41,9 @@ func (r *TokenRepositoryImpl) FindByTokenString(ctx context.Context, tokenString
 
 func (r *TokenRepositoryImpl) DeleteAllByUserID(ctx context.Context,userID string)error{
 	return r.db.WithContext(ctx).Where("user_id = ?",userID).Delete(&models.Token{}).Error
-
 }
+func (r *TokenRepositoryImpl) DeleteByTokenString(ctx context.Context,tokenString string)error{
+	return r.db.WithContext(ctx).Where("token = ?",tokenString).Delete(&models.Token{}).Error
+}
+
+ 

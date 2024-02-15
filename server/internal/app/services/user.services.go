@@ -3,9 +3,8 @@ package services
 import (
 	"context"
 
-	"github.com/chihabMe/ichat/server/core"
+	"github.com/chihabMe/ichat/server/internal/app/models"
 	"github.com/chihabMe/ichat/server/internal/app/repositories"
-	"github.com/chihabMe/ichat/server/models"
 )
 
 
@@ -42,10 +41,8 @@ func (s *UserService) GetUserByEmail(ctx context.Context, email string) (*models
 }
 
 
-
-func UpdateUserPassword(newPasswordHash string,user *models.User)error{
-	db:=core.Instance
-	user.Password = newPasswordHash
-	return db.Save(&user).Error
-
+func (s *UserService) UpdateUserPassword(ctx context.Context,user *models.User,newPassword string)  error {
+	user.Password = newPassword
+	return  s.userRepository.Update(ctx,user)
 }
+

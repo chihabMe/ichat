@@ -5,7 +5,6 @@ import (
 
 	"github.com/chihabMe/ichat/server/internal/app/models"
 	"github.com/chihabMe/ichat/server/internal/app/services"
-	"github.com/chihabMe/ichat/server/schemas"
 	utils "github.com/chihabMe/ichat/server/utils/jwt"
 	validators "github.com/chihabMe/ichat/server/utils/validators"
 	"github.com/gofiber/fiber/v2"
