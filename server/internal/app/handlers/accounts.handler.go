@@ -3,7 +3,7 @@ package handler
 import (
 	"strings"
 
-	"github.com/chihabMe/ichat/server/dto"
+	"github.com/chihabMe/ichat/server/internal/app/dto"
 	"github.com/chihabMe/ichat/server/internal/app/models"
 	"github.com/chihabMe/ichat/server/internal/app/services"
 	utils "github.com/chihabMe/ichat/server/utils/validators"

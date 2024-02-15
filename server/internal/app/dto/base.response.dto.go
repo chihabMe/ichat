@@ -10,6 +10,6 @@ const (
 type BaseResponseDTO struct {
 	Message string
 	Status Status
-	Errors map[string]string
+	Errors error
 	Data interface{}  
 }
