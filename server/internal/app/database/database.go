@@ -11,15 +11,15 @@ import (
 
 var instance *gorm.DB
 
-func InitDb(cfg *config.Config){
+func InitDb(cfg *config.Config)error{
 	dsn := cfg.DatabaseDSN()
 	fmt.Println("connecting to ",dsn)
 	db,err :=gorm.Open(mysql.Open(dsn),&gorm.Config{})
 	if err!=nil{
-		fmt.Println("failed to connect with the database")
-		panic(err)
+		return err
 	}
 	instance = db
+	return nil
 }
 func GetDb() *gorm.DB {
 	return instance
