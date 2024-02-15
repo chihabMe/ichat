@@ -22,32 +22,41 @@ type UserRepositoryImpl struct {
 
 // Create implements UserRepository.
 func (r *UserRepositoryImpl) Create(ctx context.Context, user *models.User) error {
-	panic("unimplemented")
+	return r.db.WithContext(ctx).Create(user).Error
 }
-
-// Delete implements UserRepository.
-func (r *UserRepositoryImpl) Delete(ctx context.Context, userId string) error {
-	panic("unimplemented")
-}
-
-// FindByEmail implements UserRepository.
-func (r *UserRepositoryImpl) FindByEmail(ctx context.Context, userEmail string) (*models.User, error) {
-	panic("unimplemented")
-}
-
-// FindById implements UserRepository.
-func (r *UserRepositoryImpl) FindById(ctx context.Context, userId string) (*models.User, error) {
-	panic("unimplemented")
-}
-
-// FindByUsername implements UserRepository.
-func (r *UserRepositoryImpl) FindByUsername(ctx context.Context, userUsername string) (*models.User, error) {
-	panic("unimplemented")
-}
-
 func (r *UserRepositoryImpl) Update(ctx context.Context, user *models.User) error {
-	panic("unimplemented")
+	return r.db.WithContext(ctx).Model(user).Updates(user).Error
 }
+
+func (r *UserRepositoryImpl) Delete(ctx context.Context, userId string) error {
+	return r.db.WithContext(ctx).Delete(&models.User{},userId).Error
+}
+
+func (r *UserRepositoryImpl) FindByEmail(ctx context.Context, userEmail string) (*models.User, error) {
+	var user models.User
+	if err:=r.db.WithContext(ctx).Where("email = ?",userEmail).First(&user).Error;err!=nil{
+		return nil,err
+	}
+	return &user,nil
+}
+
+func (r *UserRepositoryImpl) FindById(ctx context.Context, userId string) (*models.User, error) {
+
+	var user models.User
+	if err:=r.db.WithContext(ctx).First(&user,userId).Error;err!=nil{
+		return nil,err
+	}
+	return &user,nil
+}
+
+func (r *UserRepositoryImpl) FindByUsername(ctx context.Context, userUsername string) (*models.User, error) {
+	var user models.User
+	if err:= r.db.WithContext(ctx).Where("username = ?",userUsername).First(&user).Error;err!=nil{
+		return nil,err
+	}
+	return &user,nil
+}
+
 
 func NewUserRepository(db *gorm.DB) UserRepository {
 	return &UserRepositoryImpl{db: db}
