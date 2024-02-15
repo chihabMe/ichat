@@ -1,4 +1,4 @@
-package schemas
+package dto
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation"

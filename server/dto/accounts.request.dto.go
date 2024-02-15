@@ -1,17 +1,17 @@
-package schemas
+package dto
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 )
 
-type RegisterInput struct {
+type RegisterUserRequestDTO struct {
 		Username string `json:"username"`
 		Email string `json:"email"`
 		Password string `json:"password"`
 		Password2 string `json:"password2"`
 	}
-func (r RegisterInput) Validate()error{
+func (r RegisterUserRequestDTO) Validate()error{
 	return validation.ValidateStruct(&r,
 		validation.Field(&r.Email,validation.Required,is.Email),
 		validation.Field(&r.Username,validation.Required,validation.Length(6,30)),

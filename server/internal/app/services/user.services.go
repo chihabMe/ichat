@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/chihabMe/ichat/server/core"
-	"github.com/chihabMe/ichat/server/internal/app/models"
 	"github.com/chihabMe/ichat/server/internal/app/repositories"
 	"github.com/chihabMe/ichat/server/models"
 )
@@ -26,11 +25,11 @@ func (s *UserService)UpdateUser(ctx context.Context,user *models.User)error{
 	return s.userRepository.Update(ctx,user)
 }
 
-func (s *UserService) DeleteUser(ctx context.Context, userID uint) error {
+func (s *UserService) DeleteUser(ctx context.Context, userID string) error {
     return s.userRepository.Delete(ctx, userID)
 }
 
-func (s *UserService) GetUserByID(ctx context.Context, userID uint) (*models.User, error) {
+func (s *UserService) GetUserByID(ctx context.Context, userID string) (*models.User, error) {
     return s.userRepository.FindByID(ctx, userID)
 }
 

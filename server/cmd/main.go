@@ -11,9 +11,10 @@ import (
 
 func main() {
 	cfg := config.InitConfig()
-	if err:= database.InitDb(cfg);err!=nil{
+	db,err:= database.InitDb(cfg)
+	 if err!=nil{
 		log.Println("failed to connect with the database")
 		panic(err)
 	}
-	server.InitServer(cfg)
+	server.InitServer(cfg,db)
 }
