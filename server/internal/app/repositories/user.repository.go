@@ -11,7 +11,7 @@ type UserRepository interface {
 	Create(ctx context.Context, user *models.User) error
 	Update(ctx context.Context, user *models.User) error
 	Delete(ctx context.Context, userId string) error
-	FindById(ctx context.Context, userId string) (*models.User, error)
+	FindByID(ctx context.Context, userId string) (*models.User, error)
 	FindByEmail(ctx context.Context, userEmail string) (*models.User, error)
 	FindByUsername(ctx context.Context, userUsername string) (*models.User, error)
 }
@@ -40,7 +40,7 @@ func (r *UserRepositoryImpl) FindByEmail(ctx context.Context, userEmail string) 
 	return &user,nil
 }
 
-func (r *UserRepositoryImpl) FindById(ctx context.Context, userId string) (*models.User, error) {
+func (r *UserRepositoryImpl) FindByID(ctx context.Context, userId string) (*models.User, error) {
 
 	var user models.User
 	if err:=r.db.WithContext(ctx).First(&user,userId).Error;err!=nil{
