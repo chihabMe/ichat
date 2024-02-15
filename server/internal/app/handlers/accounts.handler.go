@@ -4,10 +4,10 @@ import (
 	"log"
 	"strings"
 
-	"github.com/chihabMe/ichat/server/core"
-	"github.com/chihabMe/ichat/server/models"
+	"github.com/chihabMe/ichat/server/internal/app/database"
+	"github.com/chihabMe/ichat/server/internal/app/models"
+	"github.com/chihabMe/ichat/server/internal/app/services"
 	"github.com/chihabMe/ichat/server/schemas"
-	"github.com/chihabMe/ichat/server/services"
 	utils "github.com/chihabMe/ichat/server/utils/validators"
 	"github.com/gofiber/fiber/v2"
 )
@@ -54,9 +54,6 @@ func Register(c *fiber.Ctx)error{
 
 
 }
-func UpdateProfile(c *fiber.Ctx)error{
-	return c.JSON(fiber.Map{"success":true,"message":"your profile has been updated"})
-}
 
 func ChangePassword(c *fiber.Ctx)error{
 	var changePasswordData schemas.ChangePasswordData
@@ -91,7 +88,7 @@ func DeleteAccount(c *fiber.Ctx)error{
 
 }
 func GetAllAccounts(c *fiber.Ctx)error{
-	db := core.Instance
+	db := database.GetDb()
 	var users []models.User
 	
 	if err :=db.Model(&models.Profile{}).Find(&users).Error; err!=nil{
@@ -103,6 +100,24 @@ func GetAllAccounts(c *fiber.Ctx)error{
 
 
 func GetAuthenticatedUserProfile(c *fiber.Ctx)error{
-	profile := c.Locals("user").(*models.User)
+	profile := c.Locals("user").(models.User)
 	return c.JSON(fiber.Map{"status":"success","data":profile})
+}
+
+func UpdateProfile(c *fiber.Ctx)error{
+	user := c.Locals("user").(models.User)
+	var updateProfileData  schemas.UpdateProfileData
+	if err:=c.BodyParser(&updateProfileData);err!=nil{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"failed to parse data"})
+	}
+	if err:= updateProfileData.Validate();err!=nil{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"invalid fields","errors":err})
+	}
+	user.Username=updateProfileData.Username
+	user.Profile.PhoneNumber=updateProfileData.PhoneNumber
+	if err:=services.UpdateUser(&user);err!=nil{
+		log.Println(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status":"error","message":"server error"})
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status":"success","message":"updated","data":user})
 }

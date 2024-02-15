@@ -3,9 +3,9 @@ package handler
 import (
 	"fmt"
 
-	"github.com/chihabMe/ichat/server/models"
+	"github.com/chihabMe/ichat/server/internal/app/models"
+	"github.com/chihabMe/ichat/server/internal/app/services"
 	"github.com/chihabMe/ichat/server/schemas"
-	"github.com/chihabMe/ichat/server/services"
 	utils "github.com/chihabMe/ichat/server/utils/jwt"
 	validators "github.com/chihabMe/ichat/server/utils/validators"
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +14,7 @@ func ObtainToken(c *fiber.Ctx)error{
 	input := new(schemas.LoginInput)
 	var userData schemas.UserData
 	if err:=c.BodyParser(&input);err!=nil{
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"missed fields"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"failed to parse the data"})
 	}
 	if err :=input.Validate();err!=nil{
 		return c.Status(fiber.ErrBadRequest.Code).JSON(
@@ -68,7 +68,6 @@ func LogoutToken(c *fiber.Ctx)error{
 		fmt.Println(err)
 		return c.JSON(fiber.Map{"status":"success","message":"logged out"})
 	}
-
 	services.DeleteRefreshTokenIfExisted(t)
 	return c.JSON(fiber.Map{"status":"success","message":"logged out"})
 }
@@ -78,5 +77,4 @@ func VerifyToken(c *fiber.Ctx)error{
 func Me(c *fiber.Ctx)error{
 	user := c.Locals("user").(models.User)
 	return c.JSON(fiber.Map{"status":"success","user":user})
-
 }

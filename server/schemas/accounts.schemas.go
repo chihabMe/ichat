@@ -38,3 +38,15 @@ type MeData struct {
 	Verified bool `json:"verified"`
 	Active bool `json:"active"`
 }
+
+type UpdateProfileData struct {
+	Username string `json"username"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+func (u UpdateProfileData) Validate() error{
+	return validation.ValidateStruct(&u,
+		validation.Field(&u.Username,validation.Length(6,30)),
+		validation.Field(&u.PhoneNumber,validation.Length(6,30)),
+	)
+}

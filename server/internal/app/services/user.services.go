@@ -17,6 +17,10 @@ func CreateProfile(profile *models.Profile)error{
 	db:= core.Instance
 	return db.Save(profile).Error
 }
+func UpdateUser(user *models.User)error{
+	db := core.Instance
+	return db.Save(user).Error
+}
 
 func GetUserByEmail(email string)(*models.User,error){
 	db := core.Instance
