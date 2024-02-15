@@ -22,9 +22,8 @@ func setupMiddleware(app *fiber.App) {
 	}))
 }
 
-func Start() {
+func InitServer(cfg *config.Config) {
 	app := fiber.New()
-	cfg := config.NewConfig()
 	setupMiddleware(app)
 	setupRoutes(app)
 	log.Fatal(app.Listen(fmt.Sprintf(":%s", cfg.Port)))
