@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/chihabMe/ichat/server/internal/app/config"
+	"github.com/chihabMe/ichat/server/internal/app/errorutil"
 	"github.com/chihabMe/ichat/server/internal/app/repositories"
 	"github.com/chihabMe/ichat/server/internal/app/router"
 	"github.com/chihabMe/ichat/server/internal/app/services"
@@ -19,11 +20,39 @@ type Server struct{
 	db *gorm.DB
 	app *fiber.App
 }
+func errorsHandler(ctx *fiber.Ctx,err error)error{
+		code := fiber.StatusInternalServerError
+		var message string
+		var errorData interface{}  = nil
+		switch e :=err.(type){
+		case *errorutil.CustomError:
+			code  = e.Status
+			message = e.Message
+		case *errorutil.BodyValidationError:
+			code = e.Status
+			message  =e.Message
+			errorData = e.Errors
+		default:
+			if fe,ok :=err.(*fiber.Error);ok{
+				code  = fe.Code
+				message = fe.Message
+			}else{
+				message = "Internal server error"
+			}
+		}
+		if errorData==nil{
+		return ctx.Status(code).JSON(fiber.Map{"status":"error","message":message})
+
+		}
+		return ctx.Status(code).JSON(fiber.Map{"status":"error","message":message,"errors":errorData})
+	}
 func CreateServer(cfg *config.Config,db *gorm.DB) *Server{
 	return &Server{
 		cfg: cfg,
 		db: db,
-		app:fiber.New() ,
+		app:fiber.New(fiber.Config{
+			ErrorHandler: errorsHandler,
+		}) ,
 	}
 
 

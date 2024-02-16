@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/chihabMe/ichat/server/internal/app/dto"
+	"github.com/chihabMe/ichat/server/internal/app/errorutil"
 	"github.com/chihabMe/ichat/server/internal/app/models"
 	"github.com/chihabMe/ichat/server/internal/app/services"
 	utils "github.com/chihabMe/ichat/server/utils/validators"
@@ -22,25 +23,26 @@ func (h *AccountHandler) RegisterUser(c *fiber.Ctx)error{
 	var body dto.RegisterUserRequestDTO
 	ctx :=c.Context()
 	  if err := c.BodyParser(&body); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error":"Failed to parse data",})
+		return errorutil.ErrFailedToParseData
     }
 	err := body.Validate()
 	if(err!=nil){
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","errors":err})
+		return errorutil.NewValidationError(err,"Invalid fields ")
 	}
 	hashedPassword , err :=utils.HashPassword(body.Password)
 	if err!=nil{
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
+		return errorutil.ErrInternalServerError
 	}
 	user.Username=body.Username
 	user.Email=body.Email
 	user.Password=hashedPassword
 	if err := h.userService.CreateUser(ctx,&user);err!=nil{
 	if strings.Contains(err.Error(), "Duplicate entry") {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "This email is already being used"})
+		errors := map[string]string {"email":"this email is already being used"}
+		return errorutil.NewValidationError(errors)
     }
 
-	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "unable to register"})
+	return errorutil.ErrInternalServerError
     } 
         
 	response := dto.RegisterUserResponseDto{
@@ -55,17 +57,7 @@ func (h *AccountHandler) RegisterUser(c *fiber.Ctx)error{
 		},
 
 	}
-
-	// if err :=services.CreateProfile(&profile);err!=nil{
-	// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
-	// }
-	
-
 	return c.JSON(response)
-
-
-
-
 }
 
 
