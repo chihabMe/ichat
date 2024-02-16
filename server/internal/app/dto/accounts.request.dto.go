@@ -19,12 +19,12 @@ func (r RegisterUserRequestDTO) Validate()error{
 		validation.Field(&r.Password2,validation.Required,validation.In(r.Password).Error("Passwords don't match")),
 	)
 }
-type ChangePasswordData struct {
+type ChangePasswordRequestDTO struct {
 	OldPassword string `json:"old_password"`
 	NewPassword string `json:"new_password"`
 	NewPassword2 string `json:"new_password2"`
 }
-func (c ChangePasswordData) Validate()error {
+func (c ChangePasswordRequestDTO) Validate()error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.OldPassword,validation.Required),
 		validation.Field(&c.NewPassword,validation.Required),

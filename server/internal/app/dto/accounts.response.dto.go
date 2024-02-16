@@ -1,11 +1,19 @@
 package dto
 
-type RegisterUserResponseDataDto struct{
+type RegisterUserResponseDataDTO struct{
 	UserId string `json:"user_id"`
 	UserEmail string `json:"user_email"`
 	UserUsername string `json:"user_username"`
 }
-type RegisterUserResponseDto struct{
+type RegisterUserResponseDTO struct{
 	BaseResponseDTO
-	Data RegisterUserResponseDataDto
+	Data RegisterUserResponseDataDTO
+}
+
+type ChangePasswordResponseDTO struct{
+	BaseResponseDTO
+}
+
+type GetAllAccountsRespondDTO struct {
+	BaseResponseDTO
 }

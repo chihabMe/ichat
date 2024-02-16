@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"strings"
 
 	"github.com/chihabMe/ichat/server/internal/app/dto"
@@ -45,12 +46,12 @@ func (h *AccountHandler) RegisterUser(c *fiber.Ctx)error{
 	return errorutil.ErrInternalServerError
     } 
         
-	response := dto.RegisterUserResponseDto{
+	response := dto.RegisterUserResponseDTO{
 		BaseResponseDTO: dto.BaseResponseDTO{
 			Message: "User registered  successfully",
 			Status: dto.StatusSuccess,
 		},
-		Data: dto.RegisterUserResponseDataDto{
+		Data: dto.RegisterUserResponseDataDTO{
 			UserId: user.ID.String(),
 			UserEmail: user.Email,
 			UserUsername: user.Username,
@@ -62,48 +63,57 @@ func (h *AccountHandler) RegisterUser(c *fiber.Ctx)error{
 
 
 
-// func ChangePassword(c *fiber.Ctx)error{
-// 	var changePasswordData schemas.ChangePasswordData
-// 	if err:=c.BodyParser(&changePasswordData);err!=nil{
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"Failed to parse data"})
-// 	}
-// 	if err := changePasswordData.Validate();err!=nil{
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","errors":err})
-// 	}
+func (h *AccountHandler) ChangePassword(c *fiber.Ctx)error{
+	var body dto.ChangePasswordRequestDTO
+	if err:=c.BodyParser(&body);err!=nil{
+		return errorutil.ErrFailedToParseData
+	}
+	if err := body.Validate();err!=nil{
+		return errorutil.NewValidationError(err)
+	}
 	
-// 	user := c.Locals("user").(*models.User)
-// 	isSamePassword := utils.ComparePassword(user.Password,changePasswordData.OldPassword)
-// 	if !isSamePassword{
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"Invalid password"})
-// 	}
-// 	newPasswordHash,err:=utils.HashPassword(changePasswordData.NewPassword)
-// 	if err!=nil{
-// 	log.Println(err)
-// 	return c.SendStatus(fiber.StatusInternalServerError)
-// 	}
+	user := c.Locals("user").(*models.User)
+	isSamePassword := utils.ComparePassword(user.Password,body.OldPassword)
+	if !isSamePassword{
+		errors := map[string]string {"old_password":"invalid password"}
+		return errorutil.NewValidationError(errors)
+	}
+	newPasswordHash,err:=utils.HashPassword(body.NewPassword)
+	if err!=nil{
+		log.Println(err)
+		return errorutil.ErrInternalServerError
+	}
 
-// 	if err:=services.UpdateUserPassword(newPasswordHash,user);err!=nil{
-// 		log.Println(err)
-// 	return c.SendStatus(fiber.StatusInternalServerError)
-// 	}
 
-// 	return c.JSON(fiber.Map{"success":true,"message":"your password has been changed"})
-// }
-// func DeleteAccount(c *fiber.Ctx)error{
-
-// 	return c.JSON(fiber.Map{"success":true,"message":"your account has been deleted"})
-
-// }
-// func GetAllAccounts(c *fiber.Ctx)error{
-// 	db := database.GetDb()
-// 	var users []models.User
+	ctx :=c.Context()
+	if err := h.userService.UpdateUserPassword(ctx,user,newPasswordHash);err!=nil{
+		log.Println(err)
+		return errorutil.ErrInternalServerError
+	}
+	response := dto.ChangePasswordResponseDTO{
+		BaseResponseDTO: dto.BaseResponseDTO{
+			Message: "you password has been changed",
+			Status: dto.StatusSuccess,
+		},
+	}
+	return c.JSON(response)
+}
+func (h *AccountHandler) GetAllAccounts(c *fiber.Ctx)error{
+	var users []models.User
 	
-// 	if err :=db.Model(&models.Profile{}).Find(&users).Error; err!=nil{
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status":"error","message":"server error"})
-// 	}
-
-// 	return c.JSON(fiber.Map{"users":users,})
-// }
+	ctx := c.Context()
+	if err:= h.userService.GetAllUsers(ctx,&users);err!=nil{
+		return errorutil.ErrInternalServerError
+	}
+	response := dto.GetAllAccountsRespondDTO{
+		BaseResponseDTO: dto.BaseResponseDTO{
+			Message: "all users",
+			Status: dto.StatusSuccess,
+			Data: users,
+		},
+	}
+	return c.JSON(response)
+}
 
 
 // func GetAuthenticatedUserProfile(c *fiber.Ctx)error{

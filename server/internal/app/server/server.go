@@ -6,6 +6,7 @@ import (
 
 	"github.com/chihabMe/ichat/server/internal/app/config"
 	"github.com/chihabMe/ichat/server/internal/app/errorutil"
+	"github.com/chihabMe/ichat/server/internal/app/middleware"
 	"github.com/chihabMe/ichat/server/internal/app/repositories"
 	"github.com/chihabMe/ichat/server/internal/app/router"
 	"github.com/chihabMe/ichat/server/internal/app/services"
@@ -68,9 +69,11 @@ func (s *Server) setupRoutes(app *fiber.App,db *gorm.DB) {
 	//creating the services
 	userService := services.NewUserService(userRepository)
 	authService := services.NewAuthService(tokenRepository)
+	//middleware
+	middleware := middleware.NewMiddleware(userService)
 
 	//creating the router
-	router := router.NewRouter(authService,userService)
+	router := router.NewRouter(authService,userService,middleware)
 
 	router.SetupAccountsRoutes(api)
 	router.SetupAuthRoutes(api)
