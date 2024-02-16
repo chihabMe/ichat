@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"time"
 )
 
 // Config holds configuration settings for the application.
@@ -13,22 +14,22 @@ type Config struct {
     DBPassword      string
     DBHost          string
     DBName          string
-    AccessTokenTTL  string // Change this to the appropriate type for your token TTL
-    RefreshTokenTTL string // Change this to the appropriate type for your token TTL
+    AccessTokenTTL  time.Duration
+    RefreshTokenTTL time.Duration
     // Add more configuration fields as needed
 }
 
 // NewConfig creates a new Config instance with default values.
 func InitConfig() *Config {
     return &Config{
-        Port:            getEnvOrDefault("PORT", "3000"),
-        DBDriver:        getEnvOrDefault("DB_DRIVER", "mysql"),
-        DBUser:          getEnvOrDefault("DB_USER", "root"),
-        DBPassword:      getEnvOrDefault("DB_PASSWORD", ""),
-        DBHost:          getEnvOrDefault("DB_HOST", "localhost"),
-        DBName:          getEnvOrDefault("DB_NAME", "dbname"),
-        AccessTokenTTL:  getEnvOrDefault("ACCESS_TOKEN_TTL", "24h"),
-        RefreshTokenTTL: getEnvOrDefault("REFRESH_TOKEN_TTL", "720h"),
+        Port:            GetEnvOrDefault("PORT", "3000"),
+        DBDriver:        GetEnvOrDefault("DB_DRIVER", "mysql"),
+        DBUser:          GetEnvOrDefault("DB_USER", "root"),
+        DBPassword:      GetEnvOrDefault("DB_PASSWORD", ""),
+        DBHost:          GetEnvOrDefault("DB_HOST", "localhost"),
+        DBName:          GetEnvOrDefault("DB_NAME", "dbname"),
+        AccessTokenTTL:  parseDuration(GetEnvOrDefault("ACCESS_TOKEN_TTL", "24h")),
+        RefreshTokenTTL: parseDuration(GetEnvOrDefault("REFRESH_TOKEN_TTL", "720h")),
         // Add default values for other configuration fields
     }
 }
@@ -39,10 +40,21 @@ func (c *Config) DatabaseDSN() string {
 }
 
 // getEnvOrDefault retrieves the value of the environment variable key, or returns defaultValue if not set.
-func getEnvOrDefault(key, defaultValue string) string {
+func GetEnvOrDefault(key, defaultValue string) string {
     value := os.Getenv(key)
     if value == "" {
         return defaultValue
     }
     return value
+}
+
+// parseDuration parses the duration string into time.Duration.
+func parseDuration(durationStr string) time.Duration {
+    duration, err := time.ParseDuration(durationStr)
+    if err != nil {
+        // If parsing fails, you may want to handle the error appropriately.
+        // For simplicity, panic is used here.
+        panic(fmt.Sprintf("Error parsing duration: %s", err))
+    }
+    return duration
 }
