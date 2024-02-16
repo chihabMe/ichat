@@ -7,5 +7,5 @@ type ObtainTokenResponseDataDTO struct {
 }
 type ObtainTokenResponseDTO struct {
 	BaseResponseDTO
-	Data ObtainTokenResponseDataDTO
-	}
+	Data ObtainTokenResponseDataDTO `json:"data"`
+	} 

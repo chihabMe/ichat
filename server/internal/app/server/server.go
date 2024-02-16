@@ -9,6 +9,7 @@ import (
 	"github.com/chihabMe/ichat/server/internal/app/router"
 	"github.com/chihabMe/ichat/server/internal/app/services"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"gorm.io/gorm"
 )
@@ -50,6 +51,8 @@ func (s *Server) setupGlobalMiddleware(app *fiber.App) {
 	app.Use(logger.New(logger.Config{
 		Format: "${pid} ${locals:requestid} ${status} - ${method} ${path}​\n",
 	}))
+	app.Use(helmet.New())
+
 }
 
 
