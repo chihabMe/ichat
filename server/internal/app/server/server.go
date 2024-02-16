@@ -13,26 +13,48 @@ import (
 	"gorm.io/gorm"
 )
 
-func setupRoutes(app *fiber.App,db *gorm.DB) {
-	api := app.Group("/api")
+type Server struct{
+	cfg *config.Config
+	db *gorm.DB
+	app *fiber.App
+}
+func CreateServer(cfg *config.Config,db *gorm.DB) *Server{
+	return &Server{
+		cfg: cfg,
+		db: db,
+		app:fiber.New() ,
+	}
 
-	//setting up the accounts app
+
+}
+
+func (s *Server) setupRoutes(app *fiber.App,db *gorm.DB) {
+	api := app.Group("/api")
+	// creating the repositories
 	userRepository  :=repositories.NewUserRepository(db)
+	tokenRepository  :=repositories.NewTokenRepository(db)
+
+
+	//creating the services
 	userService := services.NewUserService(userRepository)
-	router.SetupAccountsRoutes(api,userService)
-	//setting up the auth app
+	authService := services.NewAuthService(tokenRepository)
+
+	//creating the router
+	router := router.NewRouter(authService,userService)
+
+	router.SetupAccountsRoutes(api)
 	router.SetupAuthRoutes(api)
 }
 
-func setupMiddleware(app *fiber.App) {
+func (s *Server) setupGlobalMiddleware(app *fiber.App) {
 	app.Use(logger.New(logger.Config{
 		Format: "${pid} ${locals:requestid} ${status} - ${method} ${path}​\n",
 	}))
 }
 
-func InitServer(cfg *config.Config,db *gorm.DB) {
-	app := fiber.New()
-	setupMiddleware(app)
-	setupRoutes(app,db)
-	log.Fatal(app.Listen(fmt.Sprintf(":%s", cfg.Port)))
+
+func (s *Server) Start(){
+	s.setupGlobalMiddleware(s.app)
+	 s.setupRoutes(s.app,s.db)
+	log.Fatal(s.app.Listen(fmt.Sprintf(":%s", s.cfg.Port)))
 }

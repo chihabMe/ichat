@@ -10,11 +10,15 @@ import (
 
 
 func main() {
+	if err := config.InitDotenv();err!=nil{
+	log.Fatalf("failed to initialize configuration: %v", err)
+	}
 	cfg := config.InitConfig()
 	db,err:= database.InitDb(cfg)
 	 if err!=nil{
-		log.Println("failed to connect with the database")
+		log.Fatalf("failed to connect to the database: %v", err)
 		panic(err)
 	}
-	server.InitServer(cfg,db)
+	server := server.CreateServer(cfg,db)
+	server.Start()
 }

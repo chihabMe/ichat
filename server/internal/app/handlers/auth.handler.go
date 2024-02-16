@@ -112,7 +112,8 @@ func (h *AuthHandler) ObtainToken(c *fiber.Ctx)error{
 // func VerifyToken(c *fiber.Ctx)error{
 // 	return c.JSON(fiber.Map{"success":true})
 // }
-// func Me(c *fiber.Ctx)error{
-// 	user := c.Locals("user").(models.User)
-// 	return c.JSON(fiber.Map{"status":"success","user":user})
-// }
+
+func (h *AuthHandler) Me(c *fiber.Ctx)error{
+	user := c.Locals("user").(models.User)
+	return c.JSON(fiber.Map{"status":"success","user":user})
+}

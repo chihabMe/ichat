@@ -22,15 +22,15 @@ type TokenData struct {
 	Exp int64
 }
 
-func GenerateAccessToken(user models.User)(TokenData,error){
+func GenerateAccessToken(user *models.User)(TokenData,error){
 	cfg := config.InitConfig()
 	return generateToken(user,cfg.AccessTokenTTL)
 }
-func GenerateRefreshToken(user models.User)(TokenData,error){
+func GenerateRefreshToken(user *models.User)(TokenData,error){
 	cfg := config.InitConfig()
 	return generateToken(user,cfg.RefreshTokenTTL)
 }
-func generateToken(user models.User,expires time.Duration ) (TokenData, error) {
+func generateToken(user *models.User,expires time.Duration ) (TokenData, error) {
 	c := JwtClaims{
 		Username: user.Username,
 		UserId:   user.ID,

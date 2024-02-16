@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
-// Config holds configuration settings for the application.
 type Config struct {
     Port            string
     DBDriver        string
@@ -16,10 +17,8 @@ type Config struct {
     DBName          string
     AccessTokenTTL  time.Duration
     RefreshTokenTTL time.Duration
-    // Add more configuration fields as needed
 }
 
-// NewConfig creates a new Config instance with default values.
 func InitConfig() *Config {
     return &Config{
         Port:            GetEnvOrDefault("PORT", "3000"),
@@ -34,7 +33,6 @@ func InitConfig() *Config {
     }
 }
 
-// DatabaseDSN returns the data source name (DSN) for the database connection.
 func (c *Config) DatabaseDSN() string {
     return fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.DBUser, c.DBPassword, c.DBHost, c.DBName)
 }
@@ -47,13 +45,13 @@ func GetEnvOrDefault(key, defaultValue string) string {
     }
     return value
 }
+func InitDotenv()error{
+    return godotenv.Load()
+}
 
-// parseDuration parses the duration string into time.Duration.
 func parseDuration(durationStr string) time.Duration {
     duration, err := time.ParseDuration(durationStr)
     if err != nil {
-        // If parsing fails, you may want to handle the error appropriately.
-        // For simplicity, panic is used here.
         panic(fmt.Sprintf("Error parsing duration: %s", err))
     }
     return duration
