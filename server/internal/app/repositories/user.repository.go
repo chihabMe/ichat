@@ -30,7 +30,7 @@ func (r *UserRepositoryImpl) Create(ctx context.Context, user *models.User) erro
 	return r.db.WithContext(ctx).Create(user).Error
 }
 func (r *UserRepositoryImpl) All(ctx context.Context,users *[]models.User)error{
-	return r.db.WithContext(ctx).Model(&models.User{}).Find(users).Error
+	return r.db.WithContext(ctx).Model(&models.User{}).Preload("Profile").Find(users).Error
 }
 func (r *UserRepositoryImpl) Update(ctx context.Context, user *models.User) error {
 	return r.db.WithContext(ctx).Model(user).Updates(user).Error

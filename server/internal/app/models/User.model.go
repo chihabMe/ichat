@@ -1,9 +1,5 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
-
 type Role int
 
 const (
@@ -30,11 +26,8 @@ type User struct {
 	Password string `json:"-"`
 	Verified bool
 	Active   bool
-	Profile  Profile
+	Profile  Profile `gorm:"foreignKey:UserId"`
 	Tokens   []Token
 	Role     Role
 }
 
-func (u *User) AfterSave(tx *gorm.DB) (err error) {
-	return
-}

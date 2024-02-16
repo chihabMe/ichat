@@ -20,7 +20,6 @@ func NewAccountHandler(userService *services.UserService)*AccountHandler{
 }
 
 func (h *AccountHandler) RegisterUser(c *fiber.Ctx)error{
-	var user models.User
 	var body dto.RegisterUserRequestDTO
 	ctx :=c.Context()
 	  if err := c.BodyParser(&body); err != nil {
@@ -34,10 +33,14 @@ func (h *AccountHandler) RegisterUser(c *fiber.Ctx)error{
 	if err!=nil{
 		return errorutil.ErrInternalServerError
 	}
-	user.Username=body.Username
-	user.Email=body.Email
-	user.Password=hashedPassword
-	if err := h.userService.CreateUser(ctx,&user);err!=nil{
+	 user  :=  models.User {
+		Username: body.Username,
+		Email: body.Email,
+		Password: hashedPassword,
+	}
+	profile := models.Profile{}
+
+	if err := h.userService.CreateUser(ctx,&user,&profile);err!=nil{
 	if strings.Contains(err.Error(), "Duplicate entry") {
 		errors := map[string]string {"email":"this email is already being used"}
 		return errorutil.NewValidationError(errors)

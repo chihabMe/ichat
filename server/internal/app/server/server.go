@@ -64,10 +64,11 @@ func (s *Server) setupRoutes(app *fiber.App,db *gorm.DB) {
 	// creating the repositories
 	userRepository  :=repositories.NewUserRepository(db)
 	tokenRepository  :=repositories.NewTokenRepository(db)
+	profileRepository  :=repositories.NewProfileRepository(db)
 
 
 	//creating the services
-	userService := services.NewUserService(userRepository)
+	userService := services.NewUserService(userRepository,profileRepository)
 	authService := services.NewAuthService(tokenRepository)
 	//middleware
 	middleware := middleware.NewMiddleware(userService)

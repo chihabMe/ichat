@@ -10,15 +10,23 @@ import (
 
 type UserService struct {
 	userRepository repositories.UserRepository
+	profileRepository repositories.ProfileRepository
 }
 
-func NewUserService(userRepository repositories.UserRepository )*UserService{
-	return &UserService{userRepository: userRepository}
+func NewUserService(userRepository repositories.UserRepository,profileRepository repositories.ProfileRepository )*UserService{
+	return &UserService{userRepository: userRepository,profileRepository: profileRepository}
 
 }
 
-func (s *UserService)CreateUser(ctx context.Context,user *models.User)error{
-	return s.userRepository.Create(ctx,user)
+func (s *UserService)CreateUser(ctx context.Context,user *models.User,profile *models.Profile)error{
+	if err:= s.userRepository.Create(ctx,user);err!=nil{
+		return err
+	}
+	profile.UserId = user.ID
+	if err:= s.profileRepository.Create(ctx,profile);err!=nil{
+		return err
+	}
+	return nil
 }
 func (s *UserService)UpdateUser(ctx context.Context,user *models.User)error{
 	return s.userRepository.Update(ctx,user)
