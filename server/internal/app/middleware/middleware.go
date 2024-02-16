@@ -4,7 +4,7 @@ package middleware
 
 import (
 	"github.com/chihabMe/ichat/server/internal/app/services"
-	utils "github.com/chihabMe/ichat/server/utils/jwt"
+	"github.com/chihabMe/ichat/server/utils"
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/golang-jwt/jwt/v5"

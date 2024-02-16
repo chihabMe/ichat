@@ -4,8 +4,7 @@ import (
 	"github.com/chihabMe/ichat/server/internal/app/dto"
 	"github.com/chihabMe/ichat/server/internal/app/models"
 	"github.com/chihabMe/ichat/server/internal/app/services"
-	utils "github.com/chihabMe/ichat/server/utils/jwt"
-	validators "github.com/chihabMe/ichat/server/utils/validators"
+	"github.com/chihabMe/ichat/server/utils"
 	"github.com/gofiber/fiber/v2"
 )
 type AuthHandler struct {
@@ -54,7 +53,7 @@ func (h *AuthHandler) ObtainToken(c *fiber.Ctx)error{
 		)
 
 	}
-	if !(validators.ComparePassword(user.Password,body.Password)){
+	if !(utils.ComparePassword(user.Password,body.Password)){
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			dto.ObtainTokenResponseDTO{
 				BaseResponseDTO: dto.BaseResponseDTO{

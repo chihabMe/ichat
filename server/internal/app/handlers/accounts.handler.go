@@ -7,7 +7,7 @@ import (
 	"github.com/chihabMe/ichat/server/internal/app/errorutil"
 	"github.com/chihabMe/ichat/server/internal/app/models"
 	"github.com/chihabMe/ichat/server/internal/app/services"
-	utils "github.com/chihabMe/ichat/server/utils/validators"
+	"github.com/chihabMe/ichat/server/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -61,47 +61,6 @@ func (h *AccountHandler) RegisterUser(c *fiber.Ctx)error{
 }
 
 
-// func Register(c *fiber.Ctx)error{
-// 	var user models.User
-// 	    var userInput schemas.RegisterInput
-// 	  if err := c.BodyParser(&userInput); err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error":"Failed to parse data",})
-//     }
-// 	err := userInput.Validate()
-// 	if(err!=nil){
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","errors":err})
-// 	}
-// 	hashedPassword , err :=utils.HashPassword(userInput.Password)
-// 	if err!=nil{
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
-// 	}
-// 	user.Username=userInput.Username
-// 	user.Email=userInput.Email
-// 	user.Password=hashedPassword
-// 	if err :=services.CreateUser(&user);err!=nil{
-// 	if strings.Contains(err.Error(), "Duplicate entry") {
-//         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "This email is already being used"})
-//     }
-
-// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "unable to register"})
-//     } 
-        
-// 	 profile := models.Profile{
-// 		UserId: user.ID,
-// 	}
-
-// 	if err :=services.CreateProfile(&profile);err!=nil{
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"unable to register",})
-// 	}
-	
-
-// 	return c.JSON(fiber.Map{
-// 		"message":"User registered successfully",
-// 		"profile":profile,
-// 	})
-
-
-// }
 
 // func ChangePassword(c *fiber.Ctx)error{
 // 	var changePasswordData schemas.ChangePasswordData
