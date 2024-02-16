@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/chihabMe/ichat/server/core"
-	"github.com/chihabMe/ichat/server/models"
+	"github.com/chihabMe/ichat/server/internal/app/config"
+	"github.com/chihabMe/ichat/server/internal/app/models"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
@@ -22,13 +22,15 @@ type TokenData struct {
 	Exp int64
 }
 
-func GenerateAccessToken(user *models.User)(TokenData,error){
-	return generateToken(user,core.ACCESS_TOKEN_TIME)
+func GenerateAccessToken(user models.User)(TokenData,error){
+	cfg := config.InitConfig()
+	return generateToken(user,cfg.AccessTokenTTL)
 }
-func GenerateRefreshToken(user *models.User)(TokenData,error){
-	return generateToken(user,core.REFRESH_TOKEN_TIME)
+func GenerateRefreshToken(user models.User)(TokenData,error){
+	cfg := config.InitConfig()
+	return generateToken(user,cfg.RefreshTokenTTL)
 }
-func generateToken(user *models.User,expires time.Duration ) (TokenData, error) {
+func generateToken(user models.User,expires time.Duration ) (TokenData, error) {
 	c := JwtClaims{
 		Username: user.Username,
 		UserId:   user.ID,
@@ -37,9 +39,8 @@ func generateToken(user *models.User,expires time.Duration ) (TokenData, error) 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 
 
-	var secretKey = core.Config("SECRET_KEY")
+	var secretKey = config.GetEnvOrDefault("SECRET_KEY","")
 
-	// Sign the token with the ECDSA private key
 	t, err := token.SignedString([]byte(secretKey))
 	 tokenData := TokenData{
 		Body: t,
@@ -58,7 +59,8 @@ func VerifyToken(tokenString string)(*jwt.Token,error){
 		if _,ok :=token.Method.(*jwt.SigningMethodHMAC);!ok{
 			return nil,fmt.Errorf("unexpected siding method ")
 		}
-		return []byte(core.Config("SECRET_KEY")),nil
+		secretKey := config.GetEnvOrDefault("SECRET_KEY","")
+		return []byte(secretKey),nil
 	})
 	if err!=nil{
 		return nil,err
