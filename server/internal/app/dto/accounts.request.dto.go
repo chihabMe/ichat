@@ -33,18 +33,18 @@ func (c ChangePasswordRequestDTO) Validate()error {
 }
 
 type MeData struct {
-	Username string `json"username"`
-	Email string `json"email"`
+	Username string `json:"username"`
+	Email string `json:"email"`
 	Verified bool `json:"verified"`
 	Active bool `json:"active"`
 }
 
-type UpdateProfileData struct {
-	Username string `json"username"`
+type UpdateProfileRequestDTO struct {
+	Username string `json:"username"`
 	PhoneNumber string `json:"phone_number"`
 }
 
-func (u UpdateProfileData) Validate() error{
+func (u UpdateProfileRequestDTO) Validate() error{
 	return validation.ValidateStruct(&u,
 		validation.Field(&u.Username,validation.Length(6,30)),
 		validation.Field(&u.PhoneNumber,validation.Length(6,30)),

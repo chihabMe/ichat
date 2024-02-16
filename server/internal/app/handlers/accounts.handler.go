@@ -119,25 +119,40 @@ func (h *AccountHandler) GetAllAccounts(c *fiber.Ctx)error{
 }
 
 
-// func GetAuthenticatedUserProfile(c *fiber.Ctx)error{
-// 	profile := c.Locals("user").(models.User)
-// 	return c.JSON(fiber.Map{"status":"success","data":profile})
-// }
+func (h *AccountHandler) GetAuthenticatedUserProfile(c *fiber.Ctx)error{
+	user := c.Locals("user").(models.User)
+	response := dto.GetAuthenticatedUserProfile{
+		BaseResponseDTO: dto.BaseResponseDTO{
+			Message: "profile data",
+			Status: dto.StatusSuccess,
+			Data: user,
+		},
+	}
+	return c.JSON(response)
+}
 
-// func UpdateProfile(c *fiber.Ctx)error{
-// 	user := c.Locals("user").(models.User)
-// 	var updateProfileData  schemas.UpdateProfileData
-// 	if err:=c.BodyParser(&updateProfileData);err!=nil{
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"failed to parse data"})
-// 	}
-// 	if err:= updateProfileData.Validate();err!=nil{
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"invalid fields","errors":err})
-// 	}
-// 	user.Username=updateProfileData.Username
-// 	user.Profile.PhoneNumber=updateProfileData.PhoneNumber
-// 	if err:=services.UpdateUser(&user);err!=nil{
-// 		log.Println(err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status":"error","message":"server error"})
-// 	}
-// 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status":"success","message":"updated","data":user})
-// }
+func (h *AccountHandler) UpdateProfile(c *fiber.Ctx)error{
+	user := c.Locals("user").(models.User)
+	var body  dto.UpdateProfileRequestDTO
+	if err:=c.BodyParser(&body);err!=nil{
+		return errorutil.ErrFailedToParseData
+	}
+	if err:= body.Validate();err!=nil{
+		return errorutil.NewValidationError(err)
+	}
+	user.Username=body.Username
+	user.Profile.PhoneNumber=body.PhoneNumber
+	ctx := c.Context()
+	if err:=h.userService.UpdateUser(ctx,&user);err!=nil{
+		log.Println(err)
+		return  errorutil.ErrInternalServerError
+	}
+	response:=dto.UpdateProfileResponseDTO{
+		BaseResponseDTO: dto.BaseResponseDTO{
+			Message: "your profile has been updated",
+			Status: dto.StatusSuccess,
+			Data: user,
+		},
+	}
+	return c.JSON(response)
+}

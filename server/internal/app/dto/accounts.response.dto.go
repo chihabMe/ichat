@@ -17,3 +17,9 @@ type ChangePasswordResponseDTO struct{
 type GetAllAccountsRespondDTO struct {
 	BaseResponseDTO
 }
+type GetAuthenticatedUserProfile struct {
+	BaseResponseDTO
+}
+type UpdateProfileResponseDTO struct {
+	BaseResponseDTO
+}
