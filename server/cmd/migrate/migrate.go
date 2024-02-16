@@ -11,13 +11,12 @@ import (
 
 func Migrate(){
 	if err :=config.InitDotenv();err!=nil{
-		log.Fatal(err)
+		log.Println(err)
 	}
 	cfg := config.InitConfig()
 	db,err:= database.InitDb(cfg)
 	if err!=nil{
 		log.Fatal(err)
-		panic(err)
 	}
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Token{})

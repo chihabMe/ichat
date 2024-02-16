@@ -13,6 +13,7 @@ type UserRepository interface {
 	All(ctx context.Context,users *[]models.User)error
 	Delete(ctx context.Context, userId string) error
 	FindByID(ctx context.Context, userId string) (*models.User, error)
+	FindByIDWithProfile(ctx context.Context, userId string) (*models.User, error)
 	FindByEmail(ctx context.Context, userEmail string) (*models.User, error)
 	FindByUsername(ctx context.Context, userUsername string) (*models.User, error)
 }
@@ -51,7 +52,16 @@ func (r *UserRepositoryImpl) FindByEmail(ctx context.Context, userEmail string) 
 func (r *UserRepositoryImpl) FindByID(ctx context.Context, userId string) (*models.User, error) {
 
 	var user models.User
-	if err:=r.db.WithContext(ctx).First(&user,userId).Error;err!=nil{
+	if err:=r.db.WithContext(ctx).First(&user,"id = ?",userId).Error;err!=nil{
+		return nil,err
+	}
+	return &user,nil
+}
+
+func (r *UserRepositoryImpl) FindByIDWithProfile(ctx context.Context, userId string) (*models.User, error) {
+
+	var user models.User
+	if err:=r.db.WithContext(ctx).Preload("Profile").Find(&user,"id = ?",userId).Error;err!=nil{
 		return nil,err
 	}
 	return &user,nil

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/chihabMe/ichat/server/internal/app/dto"
+	"github.com/chihabMe/ichat/server/internal/app/errorutil"
 	"github.com/chihabMe/ichat/server/internal/app/models"
 	"github.com/chihabMe/ichat/server/internal/app/services"
 	"github.com/chihabMe/ichat/server/utils"
@@ -21,55 +22,34 @@ func NewAuthHandler(authService *services.AuthService,userService *services.User
 func (h *AuthHandler) ObtainToken(c *fiber.Ctx)error{
 	var body dto.ObtainTokenRequestDTO
 	if err:=c.BodyParser(&body);err!=nil{
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","message":"failed to parse the data"})
+		return errorutil.ErrFailedToParseData
 	}
 	if err :=body.Validate();err!=nil{
-		return c.Status(fiber.StatusBadRequest).JSON(
-			dto.ObtainTokenResponseDTO{
-				BaseResponseDTO: dto.BaseResponseDTO{
-					Message: "Invalid fields",
-					Status: dto.StatusError,
-					Errors: err,
-					Data: nil,
-				},
-			},
-		)
+		return errorutil.NewValidationError(err)
 	}
 	ctx := c.Context()
 	user,err := h.userService.GetUserByEmail(ctx,body.Email)
 	if err!=nil{
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status":"error","message":"unable to obtain token"})
-	}
-	if(err!=nil){
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			dto.ObtainTokenResponseDTO{
-				BaseResponseDTO: dto.BaseResponseDTO{
-					Message: "internal error",
-					Status: dto.StatusError,
-					Errors: err,
-					Data: nil,
-				},
-			},
-		)
-
+		errors :=map[string]string{
+			"password":"Invalid password",
+			"email":"Invalid invalid email",
+		}
+		return errorutil.NewValidationError(errors,"invalid password or email")
 	}
 	if !(utils.ComparePassword(user.Password,body.Password)){
-		return c.Status(fiber.StatusInternalServerError).JSON(
-			dto.ObtainTokenResponseDTO{
-				BaseResponseDTO: dto.BaseResponseDTO{
-					Message: "invalid password or email ",
-					Status: dto.StatusError,
-				},
-			},
-		)
+		errors :=map[string]string{
+			"password":"Invalid password",
+			"email":"Invalid invalid email",
+		}
+		return errorutil.NewValidationError(errors,"invalid password or email")
 	}
 	accessToken,err:= utils.GenerateAccessToken(user)
 	if err!=nil{
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status":"error","message":"unable to obtain token"})
+		return errorutil.ErrInternalServerError
 	}
 	refreshToken,err:= utils.GenerateRefreshToken(user)
 	if err!=nil{
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status":"error","message":"unable to obtain token"})
+		return errorutil.ErrInternalServerError
 		}
 	 token := models.Token{
 		Exp: refreshToken.Exp,
@@ -113,6 +93,6 @@ func (h *AuthHandler) ObtainToken(c *fiber.Ctx)error{
 // }
 
 func (h *AuthHandler) Me(c *fiber.Ctx)error{
-	user := c.Locals("user").(models.User)
+	user := c.Locals("user").(*models.User)
 	return c.JSON(fiber.Map{"status":"success","user":user})
 }

@@ -120,7 +120,7 @@ func (h *AccountHandler) GetAllAccounts(c *fiber.Ctx)error{
 
 
 func (h *AccountHandler) GetAuthenticatedUserProfile(c *fiber.Ctx)error{
-	user := c.Locals("user").(models.User)
+	user := c.Locals("user").(*models.User)
 	response := dto.GetAuthenticatedUserProfile{
 		BaseResponseDTO: dto.BaseResponseDTO{
 			Message: "profile data",
@@ -132,7 +132,7 @@ func (h *AccountHandler) GetAuthenticatedUserProfile(c *fiber.Ctx)error{
 }
 
 func (h *AccountHandler) UpdateProfile(c *fiber.Ctx)error{
-	user := c.Locals("user").(models.User)
+	user := c.Locals("user").(*models.User)
 	var body  dto.UpdateProfileRequestDTO
 	if err:=c.BodyParser(&body);err!=nil{
 		return errorutil.ErrFailedToParseData
@@ -143,7 +143,7 @@ func (h *AccountHandler) UpdateProfile(c *fiber.Ctx)error{
 	user.Username=body.Username
 	user.Profile.PhoneNumber=body.PhoneNumber
 	ctx := c.Context()
-	if err:=h.userService.UpdateUser(ctx,&user);err!=nil{
+	if err:=h.userService.UpdateUser(ctx,user);err!=nil{
 		log.Println(err)
 		return  errorutil.ErrInternalServerError
 	}

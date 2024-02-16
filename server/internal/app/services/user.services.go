@@ -39,6 +39,10 @@ func (s *UserService) DeleteUser(ctx context.Context, userID string) error {
 func (s *UserService) GetUserByID(ctx context.Context, userID string) (*models.User, error) {
     return s.userRepository.FindByID(ctx, userID)
 }
+
+func (s *UserService) GetUserWithProfileByID(ctx context.Context, userID string) (*models.User, error) {
+    return s.userRepository.FindByIDWithProfile(ctx, userID)
+}
 func (s *UserService) GetAllUsers(ctx context.Context,users *[]models.User)error{
 	return s.userRepository.All(ctx,users)
 }

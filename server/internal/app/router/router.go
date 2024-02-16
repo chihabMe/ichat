@@ -21,7 +21,7 @@ func (r *Router) SetupAuthRoutes(app fiber.Router){
 	router := app.Group("/auth")
 	router.Post("/token/obtain",authHandler.ObtainToken)
 	// router.Post("/token/logout",handler.LogoutToken)
-	router.Post("/me",r.middleware.ProtectedMiddleware(),authHandler.Me)
+	router.Get("/me",r.middleware.ProtectedMiddleware(),authHandler.Me)
 	 fmt.Println(("regeared auth routes successfully"))
 }
 
@@ -33,7 +33,7 @@ func (r *Router) SetupAccountsRoutes(app fiber.Router){
 	 router.Get("",accountHandler.GetAllAccounts)
 	 router.Post("/register",accountHandler.RegisterUser)
 	 router.Post("/change-password",r.middleware.ProtectedMiddleware(),accountHandler.ChangePassword)
-	//  router.Get("/profile",middleware.ProtectedMiddleware(),handler.GetAuthenticatedUserProfile)
+	 router.Get("/profile",r.middleware.ProtectedMiddleware(),accountHandler.GetAuthenticatedUserProfile)
 
 	 fmt.Println(("regeared accounts routes successfully"))
 }

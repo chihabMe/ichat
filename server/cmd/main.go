@@ -11,7 +11,7 @@ import (
 
 func main() {
 	if err := config.InitDotenv();err!=nil{
-	log.Fatalf("failed to initialize configuration: %v", err)
+		log.Println(err)
 	}
 	cfg := config.InitConfig()
 	db,err:= database.InitDb(cfg)

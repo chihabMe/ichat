@@ -21,13 +21,13 @@ func (r Role) String() string {
 
 type User struct {
 	Base
-	Username string
-	Email    string `gorm:"unique"`
+	Username string `json:"username"`
+	Email    string `gorm:"unique" json:"email"`
 	Password string `json:"-"`
-	Verified bool
-	Active   bool
-	Profile  Profile `gorm:"foreignKey:UserId"`
+	Verified bool `json:"verified"`
+	Active   bool `json:"active"`
+	Profile  Profile `gorm:"foreignKey:UserId" json:"profile"`
 	Tokens   []Token
-	Role     Role
+	Role     Role `json:"role"`
 }
 

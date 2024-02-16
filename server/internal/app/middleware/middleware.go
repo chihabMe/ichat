@@ -3,6 +3,8 @@
 package middleware
 
 import (
+	"log"
+
 	"github.com/chihabMe/ichat/server/internal/app/services"
 	"github.com/chihabMe/ichat/server/utils"
 	"github.com/gofiber/fiber/v2"
@@ -31,9 +33,9 @@ func (m *Middleware) ProtectedMiddleware() fiber.Handler {
         }
         claims := token.Claims.(jwt.MapClaims)
         userID := claims["user_id"].(string)
-
-        user, err := m.userService.GetUserByID(c.Context(), userID)
+        user, err := m.userService.GetUserWithProfileByID(c.Context(), userID)
         if err != nil {
+            log.Println(err)
             return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
         }
         c.Locals("user", user)
