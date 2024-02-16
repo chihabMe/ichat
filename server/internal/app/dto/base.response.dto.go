@@ -8,8 +8,8 @@ const (
 )
 
 type BaseResponseDTO struct {
-	Message string
-	Status Status
-	Errors error
-	Data interface{}  
+	Message string `json:"message"`
+	Status Status `json:"status"`
+	Errors error `json:"errors"`
+	Data interface{}  `json:"data"`
 }

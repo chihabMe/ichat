@@ -47,7 +47,6 @@ func (h *AccountHandler) RegisterUser(c *fiber.Ctx)error{
 		BaseResponseDTO: dto.BaseResponseDTO{
 			Message: "User registered  successfully",
 			Status: dto.StatusSuccess,
-			Errors: nil,
 		},
 		Data: dto.RegisterUserResponseDataDto{
 			UserId: user.ID.String(),

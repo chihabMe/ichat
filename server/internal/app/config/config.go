@@ -21,7 +21,7 @@ type Config struct {
 
 func InitConfig() *Config {
     return &Config{
-        Port:            GetEnvOrDefault("PORT", "3000"),
+        Port:            GetEnvOrDefault("PORT", "8000"),
         DBDriver:        GetEnvOrDefault("DB_DRIVER", "mysql"),
         DBUser:          GetEnvOrDefault("DB_USER", "root"),
         DBPassword:      GetEnvOrDefault("DB_PASSWORD", ""),
