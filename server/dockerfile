@@ -1,0 +1,20 @@
+FROM golang:1.20
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+#COPY ALL FILE TO THE APP DIRECTORY
+COPY utils cmd internal ./
+
+#build the app
+RUN go build -o ./bin ./cmd/main.go
+
+## use linux 
+FROM alpine:latest
+
+WORKDIR /app
+COPY --from=build ./bin .
+EXPOSE 8080
+CMD ["./app"]
+
