@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/chihabMe/ichat/server/internal/app/dto"
 	"github.com/chihabMe/ichat/server/internal/app/errorutil"
 	"github.com/chihabMe/ichat/server/internal/app/models"
@@ -71,26 +73,31 @@ func (h *AuthHandler) ObtainToken(c *fiber.Ctx)error{
 	)
 }
 
-// func LogoutToken(c *fiber.Ctx)error{
-// 	var token schemas.LogoutBody
-// 	if err:= c.BodyParser(&token);err!=nil{
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"refresh_token":"required "})
-// 	}
-// 	if err:= token.Validate();err!=nil{
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status":"error","errors":err})
-// 	}
-// 	t := token.RefreshToken
-// 	_,err := utils.VerifyToken(t)
-// 	if err!=nil{
-// 		fmt.Println(err)
-// 		return c.JSON(fiber.Map{"status":"success","message":"logged out"})
-// 	}
-// 	services.DeleteRefreshTokenIfExisted(t)
-// 	return c.JSON(fiber.Map{"status":"success","message":"logged out"})
-// }
-// func VerifyToken(c *fiber.Ctx)error{
-// 	return c.JSON(fiber.Map{"success":true})
-// }
+func (h *AuthHandler) LogoutToken(c *fiber.Ctx)error{
+	var body dto.LogoutTokenRequestDTO
+
+	if err:= c.BodyParser(&body);err!=nil{
+		return errorutil.ErrFailedToParseData
+	}
+	if err:= body.Validate();err!=nil{
+		return errorutil.NewValidationError(err)
+	}
+	t := body.RefreshToken
+	_,err := utils.VerifyToken(t)
+	response := dto.LogoutTokenResponseDTO{
+		BaseResponseDTO: dto.BaseResponseDTO{
+			Message: "logged out",
+			Status: dto.StatusSuccess,
+		},
+	}
+	if err!=nil{
+		fmt.Println(err)
+		return c.JSON(response)
+	}
+	ctx := c.Context()
+	h.authService.DeleteRefreshTokenIfExisted(ctx,t)
+	return c.JSON(response)
+}
 
 func (h *AuthHandler) Me(c *fiber.Ctx)error{
 	user := c.Locals("user").(*models.User)

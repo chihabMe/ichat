@@ -36,4 +36,5 @@ func NewValidationError(err interface{},message ...string)*BodyValidationError{
 var (
 	ErrFailedToParseData  = &CustomError{Message: "Failed to parse data",Status: fiber.StatusBadRequest}
 	ErrInternalServerError = &CustomError{Message: "Internal server error",Status: fiber.StatusInternalServerError}
+	ErrAuthorizedError = &CustomError{Message: "Unauthorized",Status: fiber.StatusUnauthorized}
 )

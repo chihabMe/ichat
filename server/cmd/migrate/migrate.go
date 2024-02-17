@@ -9,22 +9,32 @@ import (
 	"github.com/chihabMe/ichat/server/internal/app/models"
 )
 
-func Migrate(){
-	if err :=config.InitDotenv();err!=nil{
-		log.Println(err)
+func Migrate() error {
+	// Load environment variables
+	if err := config.InitDotenv(); err != nil {
+		return fmt.Errorf("failed to load environment variables: %v", err)
 	}
+
+	// Initialize configuration
 	cfg := config.InitConfig()
-	db,err:= database.InitDb(cfg)
-	if err!=nil{
-		log.Fatal(err)
+
+	// Initialize database
+	db, err := database.InitDb(cfg)
+	if err != nil {
+		return fmt.Errorf("failed to connect to the database: %v", err)
 	}
-	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Token{})
-	db.AutoMigrate(&models.Profile{})
-	fmt.Println("database migrated successfully")
+
+	// Auto-migrate models
+	if err := db.AutoMigrate(&models.User{}, &models.Token{}, &models.Profile{}); err != nil {
+		return fmt.Errorf("failed to migrate models: %v", err)
+	}
+
+	fmt.Println("Database migrated successfully")
+	return nil
 }
 
-
-func main(){
-Migrate()
+func main() {
+	if err := Migrate(); err != nil {
+		log.Fatal(err)
+	}
 }

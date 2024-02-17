@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 var instance *gorm.DB
 
 func InitDb(cfg *config.Config)(*gorm.DB,error){
