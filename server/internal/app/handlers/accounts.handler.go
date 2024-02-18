@@ -160,5 +160,5 @@ func (h *AccountHandler) UpdateProfile(c *fiber.Ctx)error{
 
 func (h *AccountHandler) IsAdmin(c *fiber.Ctx)error{
 	user := c.Locals("user").(*models.User)
-	return c.JSON(fiber.Map{"role":user.Role});
+	return c.JSON(fiber.Map{"role":user.Role.String()});
 }

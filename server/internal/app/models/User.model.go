@@ -27,11 +27,11 @@ type User struct {
 	Verified bool `json:"verified"`
 	Active   bool `json:"active"`
 	Profile  Profile `gorm:"foreignKey:UserId" json:"profile"`
-	Tokens   []Token
+	Tokens   []Token `json:"-"`
 	Role     Role `json:"role"`
-	CreatedGroups []Group `gorm:"foreignKey:CreatorID"`
-	Groups []*Group `gorm:"many2many:user_groups;"`
-	ReceivedMessages []PrivateMessage `gorm:"foreignKey:ReceiverId" json:"received_messages"`
-	SentMessages []PrivateMessage `gorm:"foreignKey:SenderId" json:"sent_messages"`
+	CreatedGroups []Group `gorm:"foreignKey:CreatorID" json:"-"` 
+	Groups []*Group `gorm:"many2many:user_groups;" json:"-"` 
+	ReceivedMessages []PrivateMessage `gorm:"foreignKey:ReceiverId" json:"-"`
+	SentMessages []PrivateMessage `gorm:"foreignKey:SenderId"  json:"-"`
 }
 
