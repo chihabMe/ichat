@@ -29,5 +29,8 @@ type User struct {
 	Profile  Profile `gorm:"foreignKey:UserId" json:"profile"`
 	Tokens   []Token
 	Role     Role `json:"role"`
+	CreatedGroups []Group `gorm:"foreignKey:CreatorID"`
+	Groups []*Group `gorm:"many2many:user_groups;"`
+
 }
 
