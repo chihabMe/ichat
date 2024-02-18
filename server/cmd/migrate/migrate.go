@@ -25,7 +25,7 @@ func Migrate() error {
 	}
 
 	// Auto-migrate models
-	if err := db.AutoMigrate(&models.User{}, &models.Token{}, &models.Profile{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.Token{}, &models.Profile{},&models.PrivateMessage{},&models.GroupMessage{},&models.Group{}); err != nil {
 		return fmt.Errorf("failed to migrate models: %v", err)
 	}
 

@@ -61,7 +61,7 @@ func (h *AccountHandler) RegisterUser(c *fiber.Ctx)error{
 		},
 
 	}
-	return c.JSON(response)
+	return c.Status(fiber.StatusCreated).JSON(response)
 }
 
 

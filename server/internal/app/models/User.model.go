@@ -31,7 +31,7 @@ type User struct {
 	Role     Role `json:"role"`
 	CreatedGroups []Group `gorm:"foreignKey:CreatorID"`
 	Groups []*Group `gorm:"many2many:user_groups;"`
-	ReceivedMessages []PrivateMessage `json:"received_messages"`
-	SentMessages []PrivateMessage `json:"sent_messages"`
+	ReceivedMessages []PrivateMessage `gorm:"foreignKey:ReceiverId" json:"received_messages"`
+	SentMessages []PrivateMessage `gorm:"foreignKey:SenderId" json:"sent_messages"`
 }
 

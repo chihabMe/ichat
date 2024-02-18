@@ -2,16 +2,13 @@ package models
 
 import "github.com/google/uuid"
 
-type BaseMessage  struct{
-	Base
-	Body string `json:"body"`
-	Sender User `json:"sender"`
-}
 type PrivateMessage struct {
-	BaseMessage
-	Receiver User `json:"receiver"`
+	Body string `json:"body"`
+	SenderId uuid.UUID `json:"sender_id"`
+	ReceiverId uuid.UUID `json:"receiver_id"`
 }
 type GroupMessage struct {
-	BaseMessage
+	Body string `json:"body"`
+	SenderId uuid.UUID `json:"sender_id"`
 	GroupId uuid.UUID 
 }
