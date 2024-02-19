@@ -10,11 +10,14 @@ COPY utils cmd internal ./
 #build the app
 RUN go build -o ./bin ./cmd/main.go
 
-## use linux 
-FROM alpine:latest
-
-WORKDIR /app
-COPY --from=build ./bin .
 EXPOSE 8080
-CMD ["./app"]
+CMD ["./bin"]
+
+## use linux 
+# FROM alpine:latest
+
+# WORKDIR /app
+# COPY --from=build ./bin .
+# EXPOSE 8080
+# CMD ["./app"]
 
