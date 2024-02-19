@@ -8,7 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
-var instance *gorm.DB
+
+
 
 func InitDb(cfg *config.Config)(*gorm.DB,error){
 	dsn := cfg.DatabaseDSN()
@@ -17,9 +18,5 @@ func InitDb(cfg *config.Config)(*gorm.DB,error){
 	if err!=nil{
 		return nil,err
 	}
-	instance = db
 	return db,nil
-}
-func GetDb() *gorm.DB {
-	return instance
 }
