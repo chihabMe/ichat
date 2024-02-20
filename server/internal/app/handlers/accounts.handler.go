@@ -115,7 +115,14 @@ func (h *AccountHandler) GetAllAccounts(c *fiber.Ctx)error{
 			Data: users,
 		},
 	}
+
+
 	return c.JSON(response)
+
+
+
+
+
 }
 
 

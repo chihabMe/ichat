@@ -2,15 +2,23 @@ FROM golang:1.20
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-RUN go mod download
+# COPY go.mod go.sum ./
+# RUN go mod download
 #COPY ALL FILE TO THE APP DIRECTORY
-COPY utils cmd internal ./
+# COPY utils cmd internal ./
+COPY  .  ./
 
 #build the app
 RUN go build -o ./bin ./cmd/main.go
 
 EXPOSE 8080
+
+
+ENV DB_USER=ichat\
+    DB_PASSWORD=password\
+    DB_HOST=db\
+    DB_PORT=3306\
+    DB_NAME=ichat
 CMD ["./bin"]
 
 ## use linux 
