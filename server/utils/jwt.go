@@ -88,5 +88,4 @@ func VerifyTokenExpireDate(token *jwt.Token) bool {
 	exp := float64(claims["exp"].(float64))
 	now := float64(time.Now().Unix())
 	return now < exp
-
 }

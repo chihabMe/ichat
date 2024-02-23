@@ -17,6 +17,7 @@ func Migrate() error {
 
 	// Initialize configuration
 	cfg := config.InitConfig()
+	fmt.Println("migrating to ",cfg.DBHost , "running on port ",cfg.Port)
 
 	// Initialize database
 	db, err := database.InitDb(cfg)

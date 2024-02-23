@@ -8,17 +8,22 @@ WORKDIR /app
 # COPY utils cmd internal ./
 COPY  .  ./
 
-#build the app
-RUN go build -o ./bin ./cmd/main.go
-
-EXPOSE 8080
-
 
 ENV DB_USER=ichat\
     DB_PASSWORD=password\
     DB_HOST=db\
-    DB_PORT=3306\
-    DB_NAME=ichat
+    DB_NAME=ichat\
+    PORT=8080
+
+#build the app
+
+
+RUN go run ./cmd/migrate/migrate.go
+RUN go build -o ./bin ./cmd/main.go
+EXPOSE 8080
+
+
+
 CMD ["./bin"]
 
 ## use linux 
