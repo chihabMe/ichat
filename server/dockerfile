@@ -9,13 +9,13 @@ WORKDIR /app
 COPY  .  ./
 
 
-ENV DB_USER=ichat\
-    DB_PASSWORD=password\
-    DB_HOST=db\
-    DB_NAME=ichat\
-    PORT=8080
+# ENV DB_USER=ichat\
+#     DB_PASSWORD=password\
+#     DB_HOST=db\
+#     DB_NAME=ichat\
+#     PORT=8080
 
-#build the app
+# #build the app
 
 
 RUN go run ./cmd/migrate/migrate.go
